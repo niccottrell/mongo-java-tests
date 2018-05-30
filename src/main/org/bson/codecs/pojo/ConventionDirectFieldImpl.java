@@ -3,6 +3,8 @@ package org.bson.codecs.pojo;
 import org.bson.codecs.configuration.CodecConfigurationException;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.*;
@@ -11,6 +13,7 @@ public class ConventionDirectFieldImpl implements Convention {
 
     @Override
     public void apply(final ClassModelBuilder<?> classModelBuilder) {
+        Set<String> fieldsToRemove = new HashSet<>();
         for (PropertyModelBuilder<?> propertyModelBuilder : classModelBuilder.getPropertyModelBuilders()) {
             if (!(propertyModelBuilder.getPropertyAccessor() instanceof PropertyAccessorImpl)) {
                 throw new CodecConfigurationException(format("The DIRECT_FIELDS_CONVENTION is not compatible with "
@@ -28,9 +31,13 @@ public class ConventionDirectFieldImpl implements Convention {
                     setPropertyAccessor(propertyModelBuilder);
                 }
             } else {
-                // No field exists so skip it in serialization
-                propertyModelBuilder.writeName(null);
+                // there's a setter but no field with this name
+                fieldsToRemove.add(propertyMetaData.getName());
             }
+        }
+        // remove all properties for fields that don't exist
+        for (String fieldToRemove : fieldsToRemove) {
+            classModelBuilder.removeProperty(fieldToRemove);
         }
     }
 

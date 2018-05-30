@@ -29,8 +29,12 @@ public class PojoTest {
     );
 
     protected <T> T readValue(String json, Class<T> entityClass) {
+        return readValue(json, entityClass, CODEC_REGISTRY);
+    }
+
+    protected <T> T readValue(String json, Class<T> entityClass, CodecRegistry registry) {
         // get the codec for this class
-        Codec<T> codec = CODEC_REGISTRY.get(entityClass);
+        Codec<T> codec = registry.get(entityClass);
         // prepare a context
         DecoderContext context = DecoderContext.builder().build();
         // decode into a new object
@@ -39,8 +43,12 @@ public class PojoTest {
     }
 
     protected <T> String writeValueAsString(T dummy) {
+        return writeValueAsString(dummy, CODEC_REGISTRY);
+    }
+
+    protected <T> String writeValueAsString(T dummy, CodecRegistry registry) {
         // get the codec for this class
-        Codec<T> codec = CODEC_REGISTRY.get((Class<T>) dummy.getClass());
+        Codec<T> codec = registry.get((Class<T>) dummy.getClass());
         // prepare a context
         EncoderContext context = EncoderContext.builder().build();
         // prepare output buffer

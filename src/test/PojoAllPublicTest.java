@@ -1,18 +1,16 @@
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 
 public class PojoAllPublicTest extends PojoTest {
 
     @Test
     public void test1() {
 
-        String in = "{ \"field\" : \"hello!\"}";
+        String in = "{ \"field\" : \"hello!\" }";
         Entity entity = readValue(in, Entity.class);
         String out = writeValueAsString(entity);
 
-        assertThat(in, equalToIgnoringCase(out));
+        Assert.assertEquals(in, out);
     }
 
     public static class Entity {

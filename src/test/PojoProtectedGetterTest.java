@@ -1,18 +1,17 @@
+import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 
 public class PojoProtectedGetterTest extends PojoTest {
 
     @Test
     public void test1() {
 
-        String in = "{ \"protected\" : \"hello!\"}";
+        String in = "{ \"protected\" : \"hello!\" }";
         Entity entity = readValue(in, Entity.class);
         String out = writeValueAsString(entity);
 
-        assertThat(in, equalToIgnoringCase(out));
+        Assert.assertEquals(in, out);
     }
 
     public static class Entity {
@@ -22,6 +21,7 @@ public class PojoProtectedGetterTest extends PojoTest {
         /**
          * Note: protected
          */
+        @BsonProperty("protected")
         protected String getProtected() {
             return prot;
         }

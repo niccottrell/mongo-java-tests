@@ -12,16 +12,16 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 /**
- * Tests a simple case of an Immutable object with a public constructor.
- * Automatic detection and default codecs is sufficient
+ * Tests an edge case of Immutable object with a *private* constructor.
+ * Need to move @BsonCreator and @BsonProperty to static of() method.
  */
-public class PojoImmutableTest extends PojoTest {
+public class PojoImmutablePrivateConstructorTest extends PojoTest {
 
-    public static final PojoCodecProvider PROVIDER = PojoCodecProvider.builder()
+    private static final PojoCodecProvider PROVIDER = PojoCodecProvider.builder()
             .automatic(true)
             .build();
 
-    public static final CodecRegistry REGISTRY = fromRegistries(
+    private static final CodecRegistry REGISTRY = fromRegistries(
             MongoClient.getDefaultCodecRegistry(),
             fromProviders(PROVIDER)
     );
@@ -29,7 +29,7 @@ public class PojoImmutableTest extends PojoTest {
     @Test
     public void test1() {
 
-        Entity entity = new Entity("abc", 123, MyEnum.VAL1);
+        Entity entity = new Entity("abc", 123);
         System.out.println(entity);
 
         String out = writeValueAsString(entity, REGISTRY);
@@ -44,7 +44,7 @@ public class PojoImmutableTest extends PojoTest {
     @Test
     public void test2() {
 
-        String in = "{ \"field1\" : \"def\", \"field2\" : 345, \"field3\" : \"VAL2\" }";
+        String in = "{ \"field1\" : \"def\", \"field2\" : 345 }";
         Entity entity = readValue(in, Entity.class, REGISTRY);
         System.out.println(entity);
 
@@ -53,30 +53,16 @@ public class PojoImmutableTest extends PojoTest {
         Assert.assertEquals(in, out);
     }
 
-
-    public static enum MyEnum {
-
-        VAL1,
-        VAL2,
-        VAL3
-
-    }
-
+    @SuppressWarnings("unused")
     public static class Entity {
 
         private String field1;
 
         private int field2;
 
-        private MyEnum field3;
-
-        @BsonCreator
-        public Entity(@BsonProperty("field1") String field1,
-                      @BsonProperty("field2") int field2,
-                      @BsonProperty("field3") MyEnum field3) {
+        private Entity(String field1, int field2) {
             this.field1 = field1;
             this.field2 = field2;
-            this.field3 = field3;
         }
 
         public String getField1() {
@@ -87,8 +73,11 @@ public class PojoImmutableTest extends PojoTest {
             return field2;
         }
 
-        public MyEnum getField3() {
-            return field3;
+
+        @BsonCreator
+        public static Entity of(@BsonProperty("field1") String field1,
+                                @BsonProperty("field2") int field2) {
+            return new Entity(field1, field2);
         }
 
         @Override
@@ -96,7 +85,6 @@ public class PojoImmutableTest extends PojoTest {
             return "Entity{" +
                     "field1='" + field1 + '\'' +
                     ", field2=" + field2 +
-                    ", field3=" + field3 +
                     '}';
         }
 
@@ -106,14 +94,13 @@ public class PojoImmutableTest extends PojoTest {
             if (o == null || getClass() != o.getClass()) return false;
             Entity entity = (Entity) o;
             return field2 == entity.field2 &&
-                    Objects.equals(field1, entity.field1) &&
-                    field3 == entity.field3;
+                    Objects.equals(field1, entity.field1);
         }
 
         @Override
         public int hashCode() {
 
-            return Objects.hash(field1, field2, field3);
+            return Objects.hash(field1, field2);
         }
     }
 

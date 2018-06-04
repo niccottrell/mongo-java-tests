@@ -13,14 +13,8 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class PojoImmutableTest extends PojoTest {
 
-    // this will make direct access possible
     public static final PojoCodecProvider PROVIDER = PojoCodecProvider.builder()
             .automatic(true)
-            /*
-            .conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION,
-                    Conventions.CLASS_AND_PROPERTY_CONVENTION,
-                    new ConventionDirectFieldImpl())) // this will make direct access possible
-                    */
             .build();
 
     public static final CodecRegistry REGISTRY = fromRegistries(

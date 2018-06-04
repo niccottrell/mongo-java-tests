@@ -1,4 +1,4 @@
-import codec.DateAsStringCodec;
+import org.bson.codecs.DateAsStringCodec;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.annotations.BsonCreator;

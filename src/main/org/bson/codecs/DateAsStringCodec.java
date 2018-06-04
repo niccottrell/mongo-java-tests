@@ -1,4 +1,4 @@
-package codec;
+package org.bson.codecs;
 
 import org.bson.BsonInvalidOperationException;
 import org.bson.BsonReader;

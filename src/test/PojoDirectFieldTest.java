@@ -1,9 +1,4 @@
-import codec.DateAsStringCodec;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ConventionDirectFieldImpl;
 import org.bson.codecs.pojo.Conventions;
@@ -20,11 +15,12 @@ public class PojoDirectFieldTest extends PojoTest {
 
     // this will make direct access possible
     public static final PojoCodecProvider PROVIDER = PojoCodecProvider.builder()
-            .automatic(true)
+            .register(Entity.class, Entity2.class)
             .conventions(Arrays.asList(Conventions.ANNOTATION_CONVENTION,
                     Conventions.CLASS_AND_PROPERTY_CONVENTION,
                     new ConventionDirectFieldImpl())) // this will make direct access possible
             .build();
+
     public static final CodecRegistry REGISTRY = fromRegistries(
             MongoClient.getDefaultCodecRegistry(),
             fromProviders(PROVIDER)
